@@ -14,6 +14,9 @@ SimpleJobScheduler is licensed under : The Apache Software License, Version 2.0.
 
 ## Contributors
 Gautam BT
+
 Sahil Aggarwal (@SahilAggarwal)
+
 Smit Shah (@Who828)
+
 Yogesh Nachnani (@yogeshnachnani)
