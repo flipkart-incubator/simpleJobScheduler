@@ -16,7 +16,7 @@ package com.flipkart.kloud.httpjobscheduler;
 
 
 /**
- * @understands: Scheduled job
+ * Scheduled job
  */
 public class ScheduledJob  extends Job {
     private Schedule schedule;

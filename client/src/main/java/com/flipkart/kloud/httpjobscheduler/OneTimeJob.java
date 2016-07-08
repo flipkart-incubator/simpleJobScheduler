@@ -15,7 +15,7 @@
 package com.flipkart.kloud.httpjobscheduler;
 
 /**
- * @understands: One time job which gets deleted after execution
+ * One time job which gets deleted after execution
  */
 public class OneTimeJob extends Job {
     private Long triggerTime;
