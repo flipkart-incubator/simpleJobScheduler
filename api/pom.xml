@@ -4,11 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>job-scheduler</artifactId>
-        <groupId>com.flipkart.kloud.httpjobscheduler</groupId>
+        <groupId>com.flipkart.jobscheduler</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>jobscheduler-api</name>
+    <description> Server to host Job scheduler APIs and scheduler thread </description>
     <artifactId>api</artifactId>
 
     <dependencyManagement>
@@ -86,7 +87,7 @@
             <version>3.10.4.Final</version>
         </dependency>
         <dependency>
-            <groupId>com.flipkart.kloud.httpjobscheduler</groupId>
+            <groupId>com.flipkart.jobscheduler</groupId>
             <artifactId>client</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>

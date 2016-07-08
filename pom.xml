@@ -4,8 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.flipkart.kloud.httpjobscheduler</groupId>
+    <groupId>com.flipkart.jobscheduler</groupId>
     <artifactId>job-scheduler</artifactId>
+    <name>A Simple Job Scheduler from Flipkart</name>
+    <description>A simple job scheduler capable of scheduling 10,000s of thousands of jobs at millisecond accuracy</description>
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <modules>
