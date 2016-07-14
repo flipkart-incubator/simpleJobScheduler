@@ -73,7 +73,7 @@ public class JobScheduler {
                             ScheduledJob scheduledJob = (ScheduledJob) job;
                             scheduledJob.sidelineJob();
                         } else {
-                            throw new IllegalStateException("Only scheduled jobs can be sidelined and job " + job.getName() + " is not one");
+                            log.warn("Trying to sideline a one-time job {}. Won't happen man",job.getName());
                         }
                         repository.save(job);
                     } else  if (jobInstance.shouldRunNow()) {
