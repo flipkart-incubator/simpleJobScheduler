@@ -210,8 +210,12 @@ public class JobExecutor  implements InitializingBean {
     }
 
     private void actOnStatusCode(Job job, int statusCode) {
-        switch (statusCode) {
+      switch (statusCode) {
+            /* TODO https://tools.ietf.org/html/rfc7231#section-6.5.4 states that 404 does not guarantee a permanent condition.
+                Ideally, we should only sideline on 410
+             */
             case 404 :
+            case 410 :
                 if(JobHelper.isScheduled(job)) {
                     ScheduledJob scheduledJob = (ScheduledJob) job;
                     scheduledJob.incrementNotFoundCount();
