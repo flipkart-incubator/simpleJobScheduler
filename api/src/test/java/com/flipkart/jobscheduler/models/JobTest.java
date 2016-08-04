@@ -14,7 +14,10 @@
 
 package com.flipkart.jobscheduler.models;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.jobscheduler.controllers.JobController;
+import com.flipkart.jobscheduler.utils.JobApiUtil;
+import com.flipkart.jobscheduler.utils.TestConstants;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -24,6 +27,14 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 public class JobTest {
+    private ObjectMapper objectMapper = new ObjectMapper();
+    @Test
+    public void testFoo() throws Exception {
+        String json = objectMapper.writeValueAsString(JobApiUtil.createTestScheduledJob("testJob1", "http://localhost:11000/test", TestConstants.ONE_SECOND));
+        final ScheduledJob scheduledJob = objectMapper.readValue(json, ScheduledJob.class);
+        System.out.println(scheduledJob);
+    }
+
     @Test
     public void shouldBeDeletedShouldReturn_False_IfLessThanSelfDeleteThreshold() throws Exception {
         final ScheduledJob job = new ScheduledJob();

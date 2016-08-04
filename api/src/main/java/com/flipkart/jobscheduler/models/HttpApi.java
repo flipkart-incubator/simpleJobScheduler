@@ -14,80 +14,74 @@
 
 package com.flipkart.jobscheduler.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.flipkart.jobscheduler.services.JobResponseHandler;
+import com.ning.http.client.AsyncHttpClient;
 import org.hibernate.validator.constraints.NotBlank;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 
 @Entity
-public class HttpApi {
+public class HttpApi extends Api {
     public enum Method {
         GET, POST;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
-    private Long id;
-
     @NotNull
     @Enumerated(value = EnumType.STRING)
+    @JsonProperty
     private HttpApi.Method method;
 
-    @NotBlank
-    private String url;
-
     @Lob
+    @JsonProperty
     private String body;
 
     @Lob
+    @JsonProperty
     private String headers;
 
     HttpApi() {}
 
     public HttpApi(String url, Method method) {
+        this(url, method, null);
+    }
+
+    public HttpApi(String url, Method method, String headers) {
         this.url = url;
         this.method = method;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public Method getMethod() {
-        return method;
-    }
-
-    public void setMethod(Method method) {
-        this.method = method;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(String headers) {
         this.headers = headers;
     }
+
+    @Override
+    public void executeAsync(AsyncHttpClient asyncHttpClient, JobResponseHandler jobResponseHandler) {
+        AsyncHttpClient.BoundRequestBuilder request;
+
+        if (method == HttpApi.Method.GET) {
+            request = asyncHttpClient.prepareGet(this.url);
+        } else if (method == HttpApi.Method.POST) {
+            request = asyncHttpClient.preparePost(this.url);
+            request.setBody(this.body);
+        } else {
+            throw new NotImplementedException();
+        }
+
+        addHeaders(request);
+
+        request.execute(jobResponseHandler);
+    }
+    private void addHeaders(AsyncHttpClient.BoundRequestBuilder request) {
+
+        if(headers != null) {
+            Arrays.stream(headers.split(";")).forEach(headerLine -> {
+                String[] split = headerLine.split(":");
+                String name = split[0].trim();
+                String value = split[1].trim();
+
+                request.setHeader(name, value);
+            });
+        }
+    }
+
 }

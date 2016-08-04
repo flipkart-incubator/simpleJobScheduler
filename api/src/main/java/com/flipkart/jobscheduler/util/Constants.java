@@ -12,38 +12,8 @@
  *
  */
 
-package com.flipkart.jobscheduler;
+package com.flipkart.jobscheduler.util;
 
-/**
- * Common attributes of job
- */
-public abstract class Job {
-    private String name;
-
-    private Api api;
-
-    // For jackson, in case any client needs to de-serialize
-    Job() {
-    }
-
-    public Job(String name, Api api) {
-        this.name = name;
-        this.api = api;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Api getApi() {
-        return api;
-    }
-
-    public void setApi(HttpApi httpApi) {
-        this.api = httpApi;
-    }
+public interface Constants {
+    String MAIN_METRIC_REGISTRY = "mainRegistry";
 }

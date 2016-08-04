@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.jobscheduler.Application;
 import com.flipkart.jobscheduler.models.Job;
+import com.flipkart.jobscheduler.models.ScheduledJob;
 import com.flipkart.jobscheduler.repositories.Repository;
 import com.flipkart.jobscheduler.services.MasterJobScheduler;
 import com.flipkart.jobscheduler.utils.JobApiUtil;
@@ -65,6 +66,14 @@ public class JobControllerIntegrationTest {
         masterJobScheduler.pause();
         masterJobScheduler.resume();
         testApiCounter.reset();
+    }
+
+    @Test
+    public void testFoo() throws Exception {
+        String json = objectMapper.writeValueAsString(JobApiUtil.createTestScheduledJob("testJob1", "http://localhost:11000/test", TestConstants.ONE_SECOND));
+        final ScheduledJob scheduledJob = objectMapper.readValue(json, ScheduledJob.class);
+        System.out.println(scheduledJob);
+
     }
 
     @Test

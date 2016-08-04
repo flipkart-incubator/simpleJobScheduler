@@ -15,35 +15,35 @@
 package com.flipkart.jobscheduler;
 
 /**
- * Common attributes of job
+ * An external representation of {@link com.flipkart.jobscheduler.models.Api}
  */
-public abstract class Job {
-    private String name;
+public abstract class Api {
 
-    private Api api;
+    protected String url;
+    protected String type;
 
-    // For jackson, in case any client needs to de-serialize
-    Job() {
+    /* For Jackson */
+    Api() {
+        type = "http";
     }
 
-    public Job(String name, Api api) {
-        this.name = name;
-        this.api = api;
+    protected Api(String url) {
+        this();
+        this.url = url;
+    }
+    public String getUrl() {
+        return url;
     }
 
-    public String getName() {
-        return name;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getType() {
+        return type;
     }
 
-    public Api getApi() {
-        return api;
-    }
-
-    public void setApi(HttpApi httpApi) {
-        this.api = httpApi;
+    public void setType(String type) {
+        this.type = type;
     }
 }

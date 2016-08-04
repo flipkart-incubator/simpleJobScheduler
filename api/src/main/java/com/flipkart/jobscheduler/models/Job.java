@@ -16,6 +16,8 @@ package com.flipkart.jobscheduler.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
@@ -43,10 +45,12 @@ public abstract class Job {
     protected boolean isExecuting;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "http_api_id")
+    @JoinColumn(name = "api_id")
     @NotNull
     @JsonProperty
-    protected HttpApi httpApi;
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,property = "type")
+    @JsonSubTypes(value = {@JsonSubTypes.Type(value = HttpApi.class,name = "http")})
+    protected Api api;
 
     @Transient
     @JsonIgnore
@@ -57,18 +61,18 @@ public abstract class Job {
         this.numRuns = 0;
     }
 
-    public Job(String name, HttpApi httpApi) {
+    public Job(String name, HttpApi api) {
         this();
         this.name = name;
-        this.httpApi = httpApi;
+        this.api = api;
     }
 
     public String getName() {
         return name;
     }
 
-    public HttpApi getHttpApi() {
-        return httpApi;
+    public Api getApi() {
+        return api;
     }
 
     public synchronized void markAsNotExecuting() {
