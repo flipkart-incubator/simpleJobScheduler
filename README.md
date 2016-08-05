@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/flipkart-incubator/simpleJobScheduler.svg?branch=master)](https://travis-ci.org/flipkart-incubator/simpleJobScheduler)
 ## Documentation and Examples
 ### Ridiculously short Quick start guide
 #### Building & Booting
