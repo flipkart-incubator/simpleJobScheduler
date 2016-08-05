@@ -3,6 +3,7 @@ jdk:
   - oraclejdk8
 before_install:
   - sudo apt-get -qq install zookeeper
+install: true
 services:
   - mysql
   - zookeeper
