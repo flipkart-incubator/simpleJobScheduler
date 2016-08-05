@@ -12,27 +12,8 @@
  *
  */
 
-package com.flipkart.jobscheduler;
+package com.flipkart.jobscheduler.util;
 
-
-/**
- * Scheduled job
- */
-public class ScheduledJob  extends Job {
-    private Schedule schedule;
-
-    ScheduledJob(){}
-
-    public ScheduledJob(String name, Api api, Schedule schedule) {
-        super(name, api);
-        this.schedule = schedule;
-    }
-
-    public Schedule getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(Schedule schedule) {
-        this.schedule = schedule;
-    }
+public interface Constants {
+    String MAIN_METRIC_REGISTRY = "mainRegistry";
 }

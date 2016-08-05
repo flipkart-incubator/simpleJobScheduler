@@ -14,25 +14,35 @@
 
 package com.flipkart.jobscheduler;
 
-
 /**
- * Scheduled job
+ * An external representation of {@link com.flipkart.jobscheduler.models.Api}
  */
-public class ScheduledJob  extends Job {
-    private Schedule schedule;
+public abstract class Api {
 
-    ScheduledJob(){}
+    protected String url;
+    protected String type;
 
-    public ScheduledJob(String name, Api api, Schedule schedule) {
-        super(name, api);
-        this.schedule = schedule;
+    /* For Jackson */
+    Api() {}
+
+    protected Api(String url, String type) {
+        this();
+        this.type = type;
+        this.url = url;
+    }
+    public String getUrl() {
+        return url;
     }
 
-    public Schedule getSchedule() {
-        return schedule;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public void setSchedule(Schedule schedule) {
-        this.schedule = schedule;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

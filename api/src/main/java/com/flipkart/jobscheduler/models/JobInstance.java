@@ -104,4 +104,7 @@ public class JobInstance {
             ", jobStartedTime=" + jobStartedTime +
             '}';
     }
+    public String getApiType() {
+        return this.job.getApi().getType();
+    }
 }

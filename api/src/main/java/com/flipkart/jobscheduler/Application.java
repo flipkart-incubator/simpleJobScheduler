@@ -14,8 +14,12 @@
 
 package com.flipkart.jobscheduler;
 
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.flipkart.jobscheduler.repositories.Repository;
 import com.flipkart.jobscheduler.services.MasterJobScheduler;
+import com.flipkart.jobscheduler.util.Constants;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
@@ -48,6 +52,10 @@ public class Application implements CommandLineRunner {
     @Value("${zookeeperConnString}")
     private String zookeeperConnString;
 
+    @Autowired
+    private MetricRegistry metricRegistry;
+
+    private JmxReporter reporter;
     private LeaderLatch leaderLatch;
     private CuratorFramework client;
 
@@ -61,6 +69,7 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
+        startReporting();
         client = CuratorFrameworkFactory.newClient(zookeeperConnString,
                 new ExponentialBackoffRetry(1000, Integer.MAX_VALUE));
         client.start();
@@ -85,12 +94,19 @@ public class Application implements CommandLineRunner {
         leaderLatch.start();
     }
 
+    private void startReporting() {
+        reporter = JmxReporter.forRegistry(metricRegistry).build();
+        SharedMetricRegistries.add(Constants.MAIN_METRIC_REGISTRY,metricRegistry);
+        reporter.start();
+    }
+
     private static synchronized void setMaster(Boolean master) {
         isMaster = master;
     }
 
     @PreDestroy
     public void destroy() throws IOException, InterruptedException {
+        reporter.close();
         leaderLatch.close();
         client.close();
     }

@@ -20,15 +20,15 @@ package com.flipkart.jobscheduler;
 public abstract class Job {
     private String name;
 
-    private HttpApi httpApi;
+    private Api api;
 
     // For jackson, in case any client needs to de-serialize
     Job() {
     }
 
-    public Job(String name, HttpApi httpApi) {
+    public Job(String name, Api api) {
         this.name = name;
-        this.httpApi = httpApi;
+        this.api = api;
     }
 
     public String getName() {
@@ -39,11 +39,11 @@ public abstract class Job {
         this.name = name;
     }
 
-    public HttpApi getHttpApi() {
-        return httpApi;
+    public Api getApi() {
+        return api;
     }
 
-    public void setHttpApi(HttpApi httpApi) {
-        this.httpApi = httpApi;
+    public void setApi(HttpApi httpApi) {
+        this.api = httpApi;
     }
 }

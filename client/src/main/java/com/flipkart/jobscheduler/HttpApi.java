@@ -14,7 +14,7 @@
 
 package com.flipkart.jobscheduler;
 
-public class HttpApi {
+public class HttpApi extends Api {
     public enum Method {
         GET, POST;
 
@@ -29,11 +29,12 @@ public class HttpApi {
 
     // For Jackson, in case any client needs to de-serialize
     HttpApi() {
+        super();
     }
 
     public HttpApi(Method method, String url, String body, String headers) {
+        super(url, "http");
         this.method = method;
-        this.url = url;
         this.body = body;
         this.headers = headers;
     }
@@ -44,14 +45,6 @@ public class HttpApi {
 
     public void setBody(String body) {
         this.body = body;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public Method getMethod() {
