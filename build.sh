@@ -5,7 +5,7 @@ echo "Usage: ./build.sh [noTests]"
 
 NO_TESTS_FLAG=$1
 echo "Building.."
-mvn -q clean install -DskipTests
+mvn -q clean install -DskipTests -Dmaven.javadoc.skip=true -B -V
 echo "Checking if we should run tests.."
 if [ "$NO_TESTS_FLAG" != "noTests" ]; then
   ./setup_db.sh
