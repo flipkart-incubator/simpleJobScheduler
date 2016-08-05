@@ -23,12 +23,11 @@ public abstract class Api {
     protected String type;
 
     /* For Jackson */
-    Api() {
-        type = "http";
-    }
+    Api() {}
 
-    protected Api(String url) {
+    protected Api(String url, String type) {
         this();
+        this.type = type;
         this.url = url;
     }
     public String getUrl() {

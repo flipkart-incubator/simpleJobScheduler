@@ -33,7 +33,7 @@ public class HttpApi extends Api {
     }
 
     public HttpApi(Method method, String url, String body, String headers) {
-        super(url);
+        super(url, "http");
         this.method = method;
         this.body = body;
         this.headers = headers;

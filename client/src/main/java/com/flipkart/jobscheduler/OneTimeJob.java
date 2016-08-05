@@ -23,8 +23,8 @@ public class OneTimeJob extends Job {
     OneTimeJob() {
     }
 
-    public OneTimeJob(String name, Long triggerTime, HttpApi httpApi) {
-        super(name, httpApi);
+    public OneTimeJob(String name, Long triggerTime, Api api) {
+        super(name, api);
         this.triggerTime = triggerTime;
     }
 

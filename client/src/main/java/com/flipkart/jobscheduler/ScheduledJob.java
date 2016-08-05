@@ -23,8 +23,8 @@ public class ScheduledJob  extends Job {
 
     ScheduledJob(){}
 
-    public ScheduledJob(String name, HttpApi httpApi, Schedule schedule) {
-        super(name, httpApi);
+    public ScheduledJob(String name, Api api, Schedule schedule) {
+        super(name, api);
         this.schedule = schedule;
     }
 
