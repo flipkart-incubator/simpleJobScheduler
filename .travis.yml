@@ -1,0 +1,7 @@
+language: java
+before_install:
+  - sudo apt-get -qq install zookeeper
+services:
+  - mysql
+  - zookeeper
+script: ./build.sh
