@@ -14,54 +14,34 @@
 
 package com.flipkart.jobscheduler.services;
 
-import com.codahale.metrics.*;
+import com.flipkart.jobscheduler.models.Api;
 import com.flipkart.jobscheduler.models.Job;
-import com.flipkart.jobscheduler.models.HttpApi;
-import com.flipkart.jobscheduler.models.ScheduledJob;
 import com.flipkart.jobscheduler.models.JobInstance;
-import com.flipkart.jobscheduler.util.JobHelper;
-import com.ning.http.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.annotation.PreDestroy;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-@Service
-public class JobExecutor  implements DisposableBean {
-    public static final Logger log = LoggerFactory.getLogger(JobExecutor.class);
+/**
+ * Executes a given job instance.
+ * It is mandatory to have the implementation be async in nature to provide scalable execution.
+ * @author yogesh.nachnani
+ */
+public abstract class JobExecutor<T extends Api> {
+    private static final Logger log = LoggerFactory.getLogger(JobExecutor.class);
 
-    private AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-    @Autowired
-    private MetricRegistry metricRegistry;
-
-    public void executeAsync(JobInstance jobInstance) {
+    void executeAsync(JobInstance jobInstance) {
         jobInstance.setScheduledTime(new Date().getTime());
         Job job = jobInstance.getJob();
 
         log.info("Executing {} delay {}", job.getName(), new Date().getTime() - jobInstance.getTimeToRun());
 
-        if(job.markAsExecuting()) {
-            job.getApi().executeAsync(asyncHttpClient, new JobResponseHandler(jobInstance));
+        if (job.markAsExecuting()) {
+            _executeAsync((T) job.getApi(), new JobExecutionHandler(jobInstance));
         } else {
-            log.info("Job {} is already running ");
+            log.info("Job {} is already running ", job.getName());
         }
     }
 
-    public void destroy() throws IOException, InterruptedException {
-        asyncHttpClient.close();
-    }
-
-
-
+    protected abstract void _executeAsync(T api, JobExecutionHandler jobExecutionHandler);
 }

@@ -38,7 +38,8 @@ public abstract class Api {
     @JsonProperty
     protected String url;
 
-
-    public abstract void executeAsync(AsyncHttpClient asyncHttpClient, JobResponseHandler jobResponseHandler);
+    public String getType() {
+        return this.getClass().getSimpleName();
+    }
 
 }

@@ -15,10 +15,7 @@
 package com.flipkart.jobscheduler.services;
 
 import com.codahale.metrics.SharedMetricRegistries;
-import com.flipkart.jobscheduler.models.Job;
-import com.flipkart.jobscheduler.models.JobInstance;
-import com.flipkart.jobscheduler.models.ScheduledJob;
-import com.flipkart.jobscheduler.util.JobHelper;
+import com.flipkart.jobscheduler.services.JobExecutionHandler.JobStatus;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHandlerExtensions;
 import com.ning.http.client.Response;
@@ -26,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
-import java.util.Date;
 
 import static com.flipkart.jobscheduler.util.Constants.MAIN_METRIC_REGISTRY;
 
@@ -36,27 +32,22 @@ import static com.flipkart.jobscheduler.util.Constants.MAIN_METRIC_REGISTRY;
  * <code>Api</code> execution.
  */
 public class JobResponseHandler extends AsyncCompletionHandler<Object> implements AsyncHandlerExtensions {
-    private final JobInstance jobInstance;
-    public static final Logger log = LoggerFactory.getLogger(JobExecutor.class);
+    private final JobExecutionHandler jobExecutionHandler;
+    private static final Logger log = LoggerFactory.getLogger(JobExecutor.class);
 
-    public JobResponseHandler(JobInstance jobInstance) {
-        this.jobInstance = jobInstance;
+    public JobResponseHandler(JobExecutionHandler jobExecutionHandler) {
+        this.jobExecutionHandler = jobExecutionHandler;
     }
 
     @Override
     public Object onCompleted(Response response) throws Exception {
-
-        onJobComplete(jobInstance, response);
+        jobExecutionHandler.onJobCompleted(getJobStatus(response.getStatusCode()));
         return null;
     }
 
     @Override
     public void onThrowable(Throwable t){
-        SharedMetricRegistries.getOrCreate(MAIN_METRIC_REGISTRY).meter("jobs.failed").mark();
-        Job job = jobInstance.getJob();
-        JobExecutor.log.warn("Failed to execute " + job.getName(), t);
-
-        job.markAsNotExecuting();
+        jobExecutionHandler.onException(t);
     }
 
     @Override
@@ -81,7 +72,7 @@ public class JobResponseHandler extends AsyncCompletionHandler<Object> implement
 
     @Override
     public void onSendRequest(Object request) {
-        onJobStarted(jobInstance);
+        jobExecutionHandler.onJobStarted();
     }
 
     @Override
@@ -99,40 +90,16 @@ public class JobResponseHandler extends AsyncCompletionHandler<Object> implement
 
     }
 
-    private void onJobStarted(JobInstance jobInstance) {
-        long currentTime = new Date().getTime();
-        jobInstance.setJobStartedTime(currentTime);
-
-        SharedMetricRegistries.getOrCreate(MAIN_METRIC_REGISTRY).meter("jobs.executing").mark();
-        SharedMetricRegistries.getOrCreate(MAIN_METRIC_REGISTRY).histogram("jobs.nioDelay").update(currentTime - jobInstance.getScheduledTime());
-        SharedMetricRegistries.getOrCreate(MAIN_METRIC_REGISTRY).histogram("jobs.totalDelay").update(currentTime - jobInstance.getTimeToRun());
-    }
-
-    private void onJobComplete(JobInstance jobInstance, Response response) {
-        Job job = jobInstance.getJob();
-
-        SharedMetricRegistries.getOrCreate(MAIN_METRIC_REGISTRY).meter("jobs.responseCode." + response.getStatusCode()).mark();
-        long executionTime = new Date().getTime() - jobInstance.getJobStartedTime();
-        SharedMetricRegistries.getOrCreate(MAIN_METRIC_REGISTRY).histogram("jobs.executionTime").update(executionTime);
-
-        job.markAsNotExecuting();
-        actOnStatusCode(job, response.getStatusCode());
-
-        log.info("Finished executing {} in {} with response {} {} ", job.getName(), executionTime, response.getStatusCode(), response.getStatusText());
-    }
-
-    private void actOnStatusCode(Job job, int statusCode) {
+    private JobStatus getJobStatus(int statusCode) {
         switch (statusCode) {
             /* TODO https://tools.ietf.org/html/rfc7231#section-6.5.4 states that 404 does not guarantee a permanent condition.
                 Ideally, we should only sideline on 410
              */
             case 404 :
             case 410 :
-                if(JobHelper.isScheduled(job)) {
-                    ScheduledJob scheduledJob = (ScheduledJob) job;
-                    scheduledJob.incrementNotFoundCount();
-                }
-                break;
+                return JobStatus.PERMANENT_FAILURE;
+            default:
+                return JobStatus.SUCCESS;
         }
     }
 }

@@ -33,7 +33,6 @@ public class HttpApi extends Api {
     @Enumerated(value = EnumType.STRING)
     @JsonProperty
     private HttpApi.Method method;
-
     @Lob
     @JsonProperty
     private String body;
@@ -54,25 +53,21 @@ public class HttpApi extends Api {
         this.headers = headers;
     }
 
-    @Override
-    public void executeAsync(AsyncHttpClient asyncHttpClient, JobResponseHandler jobResponseHandler) {
+    public AsyncHttpClient.BoundRequestBuilder prepareRequest(AsyncHttpClient asyncHttpClient) {
         AsyncHttpClient.BoundRequestBuilder request;
-
         if (method == HttpApi.Method.GET) {
             request = asyncHttpClient.prepareGet(this.url);
-        } else if (method == HttpApi.Method.POST) {
-            request = asyncHttpClient.preparePost(this.url);
-            request.setBody(this.body);
+        }
+        else if (method == HttpApi.Method.POST) {
+            request = asyncHttpClient.preparePost(this.url).setBody(this.body);
         } else {
             throw new NotImplementedException();
         }
-
         addHeaders(request);
-
-        request.execute(jobResponseHandler);
+        return request;
     }
-    private void addHeaders(AsyncHttpClient.BoundRequestBuilder request) {
 
+    private void addHeaders(AsyncHttpClient.BoundRequestBuilder request) {
         if(headers != null) {
             Arrays.stream(headers.split(";")).forEach(headerLine -> {
                 String[] split = headerLine.split(":");
@@ -83,5 +78,4 @@ public class HttpApi extends Api {
             });
         }
     }
-
 }
